@@ -1,5 +1,7 @@
 # deadenylationkinetics
 
+IMPORTANT: The original deadenylation kinetics package can be found at https://github.com/the-harkness-group/deadenylationkinetics. This package was modified for a follow-up paper that will be submitted soon. The original package will have much better documentation and support.
+
 ## A brief introduction to RNA biochemistry
 
 The production of proteins from mRNA is necessary for living organisms to carry out the molecular transactions that sustain their function. This process needs to be tightly regulated, as over or underproduction of proteins from mRNA can lead to serious diseases. Further, strict control over mRNA levels is paramount to proper embryonic development. The levels of mRNAs are dictated by (i) the addition of a poly(A) tail, which promotes stability, and (ii) through the action of RNA deadenylases, which remove the tail and thus act to destabilize mRNAs by promoting their digestion by nucleases. Given the importance of the RNA deadenylase enzymes involved in regulating mRNA stability and overall levels of mRNA in the cell, it is critical to understand their enzymatic mechanisms in detail.
@@ -42,6 +44,8 @@ visualization by the user or for fitting against the experimental data in the mi
 * multiprocessing  
 * lmfit
 * pyyaml
+* tqdm
+
 
 ## Usage
 
@@ -54,6 +58,8 @@ in a directory of your choosing. The procedure for simulating or fitting RNA dea
 ../analysis/main.py [configuration_file.yaml].
 
 to run deadenylationkinetics according to the configuration parameters. Note that the relative path to the main.py file will depend on the directory that the data .csv and .yaml configuration file are placed in.
+
+For the original deadenylationkinetics package, see https://github.com/the-harkness-group/deadenylationkinetics. This package was modified for the paper TBA. The original package will also have much better documentation and support.
 
 ## References
 
