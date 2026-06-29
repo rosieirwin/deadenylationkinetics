@@ -1,0 +1,65 @@
+## Use this file to configure the fitting parameters for the deadenylation assay
+## It should be placed in the same directory as the data files to be fit
+
+Sample name: CNOT7
+Data file to fit: data/FRET_data_to_fit.csv
+Output location: output/
+Output plot file: fit_plots.pdf
+Optimal fit parameter file: fit_params.csv
+Experimental parameters:
+  n: # polyA RNA length
+    Value: 18
+  Temperature: 
+    Value: 298.15
+Modeling parameters:
+  Fit: True
+  Export simulated data: False
+  Minimizer: 'leastsq'
+  Kinetic model: Steady state distributive
+  Max function evaluations: 10000
+  SS time range:
+    Export: False
+    Limit: False
+    File: ../all-float/output/CNOT7_ss_times.csv
+  Fit parameters:
+    kcat:
+      Value: 1.075918
+      Units: s^-1
+      Vary: True
+      Minimum: 0
+    KM:
+      Value: 0.0005835
+      Units: M
+      Vary: True
+      Minimum: 0.000000001
+    dGo:
+      Value: -3.2498 # kJ/mol Empirical value calculated from Sugimoto NAR paper
+      Units: kJmol^-1
+      Vary: False
+      Minimum: -20
+    alpha:
+      Value: -4.0684 # kJ/mol Empirical value calculated from Sugimoto NAR paper
+      Units: kJmol^-1
+      Vary: False
+      Minimum: -20
+  Error estimation:
+    Cores: 0  # Number of cores to use for parallel processing; if set to 0, n-1 cores are used where n is the number of cores in the machine
+    Monte Carlo:
+      Run: True
+      Iterations: 100
+      Export simulated data: False
+    Error surfaces:
+      Run: False
+      Parameter range factor: 20
+      Points: 20
+Plot parameters:
+  Best fit: 
+    Plot best fit: True  # Plot data and best fit line
+    Colormap: [[255, 229, 249, 1],[138, 0, 104, 1]]  # Colormap for the plot or [[R, G, B, alpha],[R, G, B, alpha]] values for lightest to darkest color
+  xlimits: [0, 4000]  # x-axis limits for the plot (s), set to None if you want the limits to be automatically determined
+  Marker shape: 'o'  # Marker shape for the plot
+  Plot mean data: True  # Plot mean data for a given time point (True) vs plot each data point (False) 
+  Plot residuals: True  # Plot residuals of the fits vs time (each enzyme concentration residuals shown separately)
+  Plot RNA population curves: False  # Plot RNA populations ([A_n], [A_{n-1}],[A_n-2],...) vs time (each enzyme concentration shown separately)
+  Plot 3D RNA population curves: False  # Plot RNA populations ([A_n], [A_{n-1}],[A_n-2],...) vs time vs enzyme concentration
+  Plot enzyme population curves: False  # Plot enzyme populations ([E], [E*], [E**],...) vs time (each RNA length shown separately)
