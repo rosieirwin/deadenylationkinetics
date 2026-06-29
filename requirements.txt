@@ -1,0 +1,9 @@
+pandas
+numpy
+matplotlib
+icecream
+PyYAML
+scipy
+seaborn
+tqdm
+lmfit

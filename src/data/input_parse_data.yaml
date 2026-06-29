@@ -1,0 +1,24 @@
+## Use this file to configure the data parsing and/or plotting for the deadenylation assay
+## It should be placed in the same directory as the data files to be parsed/plotted
+## The main output of the associated script is a CSV file in the proper format for use with the deadenylationkinetics fitting package
+
+Sample name: CNOT7AAA_CAPRIN1
+Data to load: 
+  File 1: 240209_CNOT7AAA_CAPRIN1_100nMRNA_fluor_data.csv
+  File 2: 240213_CNOT7AAA_CAPRIN1_100nMRNA_fluor_data.csv
+Time arrays: ../../time_arrays.csv
+Output file name: CNOT7AAA_CAPRIN1_100nMRNA_FRET_data_to_fit
+Normalization:
+  Normalize fluorescence: True
+  Normalize FRET: True
+  Fmin enzyme: 5.0e-6  # in M, indicate with enzyme concentration achevies full deadenylation (i.e., reaches the baseline)
+  # Fmin is determined by taking the average of points that are at the baseline
+  Fmin row start: 8  # by row number, indicate the first baseline time point
+  Fmin row end: 16  # y row number, indicate the last baseline time point
+Plot:
+  Plot mean data: False  # if True, plot the mean of the replicates with standard deviation error bars; else plot all points individually
+  Set x-axis limits: False  # if True, set the x-axis limits to the specified values
+  Max plot time: [0, 1000]  # if Set x-axis limits is True, set the x-axis limits to these values (in seconds)
+  Save plot as:
+    PDF: True
+    PNG: True
