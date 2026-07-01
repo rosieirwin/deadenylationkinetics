@@ -41,10 +41,6 @@ class PlotHandler:
         self.residual_flag = config_params['Plot parameters']['Plot residuals']
         self.RNA_populations_flag = config_params['Plot parameters']['Plot RNA population curves']
         self.RNA_populations_3D_flag = config_params['Plot parameters']['Plot 3D RNA population curves']
-        self.enzyme_populations_flag = config_params['Plot parameters']['Plot enzyme population curves']
-        self.annealed_fraction_flag = config_params['Plot parameters']['Plot annealed fraction']
-        self.bar_2d_flag  = config_params['Plot parameters']['Plot 2D population bars']
-        self.bar_3d_flag = config_params['Plot parameters']['Plot 3D population bars']
         self.xlimits = config_params['Plot parameters']['xlimits']
         self.export_ss_times = config_params['Modeling parameters']['SS time range']['Export']
         unique_enzyme = self.experiments[0].enzyme # FRET plots
@@ -193,7 +189,6 @@ class PlotHandler:
                                        frameon=False, handlelength=0, handletextpad=0, markerscale=0)
                     for k,text in enumerate(L.get_texts()):
                         text.set_color(enz_colors[k])
-                        # text.set_path_effects([path_effects.Stroke(linewidth=1.2, foreground=enz_colors[k]),path_effects.Normal()])
                     for item in L.legend_handles:
                         item.set_visible(False) 
 
@@ -291,7 +286,6 @@ class PlotHandler:
                             color_idx = i
                         text.set_color(enz_colors[color_idx])
                         text.set_fontweight("bold")
-                        # text.set_path_effects([path_effects.Stroke(linewidth=1.2, foreground=enz_colors[i]),path_effects.Normal()])      
             
                 if plot_mean_flag == False:
                     L = axs[i].legend(loc='upper right', frameon=False, handlelength=0, handletextpad=0, markerscale=0)
@@ -549,25 +543,6 @@ class PlotHandler:
                         axs[pi, 2].set_title("\n".join(["[Total cleavable RNA]", f"in {phase} phase"]))
                         axs[pi, 3].set_title("\n".join(["[A1]", f"in {phase} phase"]))
                     
-                    # all_species = [0]*len(kinetic_model.time[i])
-                    # for si, species in enumerate(kinetic_model.total_rna_concentrations.keys()):
-                    #     tmp_data = kinetic_model.total_rna_concentrations[species][0]
-                    #     if species == 'A1':
-                    #         axs[2, 3].plot(kinetic_model.time[i], tmp_data, color = 'black', zorder = 2 * num_rna_species - si, label='Total RNA')
-                    #         maxy_a1 = max(maxy_a1, max(tmp_data))
-                    #         miny_a1 = min(miny_a1, min(tmp_data))
-                    #     else:
-                    #         axs[2, 0].plot(kinetic_model.time[i], tmp_data, color = color_values[si], zorder = 2 * num_rna_species - si)
-                    #         if si > 1:
-                    #             all_species = [x+y for x,y in zip(all_species, tmp_data)]
-                    #         maxy = max(maxy, max(tmp_data))
-                    #         miny = min(miny, min(tmp_data))
-                    # axs[2,0].set_title(f"All RNA")            
-                    # cbar = fig.colorbar(cm.ScalarMappable(cmap='coolwarm'), cax=axs[2, 1], label="Length polyA tail", ticks=[0, 0.33, 0.66, 1], location='left')
-                    # cbar.set_ticklabels([str(1), str(int(num_rna_species/3)), str(int(2 * num_rna_species/3)), str(num_rna_species)])
-                    # axs[2, 2].plot(kinetic_model.time[i], all_species, color='black', linestyle='--')
-                    # axs[2, 2].set_title(f"[Total cleavable RNA]")   
-                    # axs[2, 3].set_title(f"[A1]")    
                     for i in range(2):
                         range_y = maxy - miny
                         axs[i,0].set_ylim([miny - 0.1 * range_y, maxy + 0.1 * range_y])
@@ -607,7 +582,7 @@ class PlotHandler:
                 kinetic_model.calculate_total_rna_concentrations()
                 color_values = cm.coolwarm(np.linspace(0,1,len(kinetic_model.total_rna_concentrations.keys())))
 
-                rna_pop_fig_3d = plt.figure(figsize=(6,6))
+                rna_pop_fig_3d = plt.figure(figsize=(8, 10))
                 rna_pop_fig_3d.suptitle(f"RNA populations for {sample_name} 1/2", fontsize=16, fontweight='bold')
                 
                 rna_pop_fig_2d = plt.figure(figsize=(6, 3))
@@ -640,8 +615,7 @@ class PlotHandler:
                             ax4.plot(kinetic_model.time[i], kinetic_model.total_rna_concentrations[k][i], label=k, color=enz_colors[i], alpha=0.8)
                     ax0.set_yticks(np.arange(len(experiment.enzyme)))
                     ax0.set_yticklabels([e * 1e6 for e in experiment.enzyme])  # Hide y-tick labels for the first plot
-                    # if enzyme != 0:
-                    #     ax0.fill_between(list(kinetic_model.time[i]), [i] * len(kinetic_model.time[i]), [0] * len(kinetic_model.time[i]), list(kinetic_model.time[i]), [i] * len(kinetic_model.time[i]), fill_between_array) # Fill between the largest RNA population and 0//facecolors="white", alpha=1, zorder=(tot_keys+1)*(max_enz - i) - q - 1
+
                     # Total cleavable RNA plot
                     max_time = max(kinetic_model.time[i])
                     ax3.plot(kinetic_model.time[i], population_sum,  label='Total RNA', color=enz_colors[i], alpha=0.8)
@@ -685,344 +659,10 @@ class PlotHandler:
                 ax5.set_title("\n".join(["Enzyme","concentrations"]), fontweight='bold')
                 ax5.axis('off')
                 
-                rna_pop_fig_3d.tight_layout()
                 pdf.savefig(rna_pop_fig_3d)
                 pdf.savefig(rna_pop_fig_2d, bbox_inches='tight')
             plt.close()
-            
-    @staticmethod
-    def plot_enzyme_populations(experiments, kinetic_models, sample_name, pdf, xlimits=None):
-        mpl.rcParams['mathtext.default'] = 'regular'  
-        plt.rcParams['figure.constrained_layout.use'] = True 
-        mpl.rcParams['font.size'] = 12
 
-        if xlimits == None:
-            max_time = round(np.max([np.max(v) for v in experiment.time]),-2)
-            xlim = [0-0.05 * max_time, max_time+0.05 * max_time]
-        else:  
-            xlim = xlimits
-            max_time = xlim[1]
-            xlim = [xlim[0]-0.05 * max_time, xlim[1]+0.05 * max_time]
-
-        for j, experiment in enumerate(experiments): # Only make plot for one replicate
-            if j == 0:
-                kinetic_model = kinetic_models[j]
-                kinetic_model.calculate_total_rna_concentrations()
-
-
-                non_zero_enz = [enz for enz in experiment.enzyme if float(enz) != 0.]
-                non_zero_idx = [ei for ei, enz in enumerate(experiment.enzyme) if float(enz) != 0.]
-
-                if len(non_zero_enz) == 1:
-                    fig_mod = 5.2
-                else:
-                    fig_mod = 2.2
-
-                enz_pop_fig = plt.figure(figsize=(9, len(non_zero_enz) * fig_mod))
-                enz_pop_fig.suptitle(f"Enzyme species for {sample_name}", fontsize=16, fontweight='bold')
-                
-
-                if len(non_zero_enz) == 1:
-                    apf_subfigs = enz_pop_fig.subfigures(2,1)
-                else:
-                    apf_subfigs = enz_pop_fig.subfigures(len(non_zero_enz),1)
-                
-                for i, enz in enumerate(non_zero_enz):
-                    axs = apf_subfigs[i].subplots(1,3,gridspec_kw={'width_ratios': [1,1,1]})
-                    ei = non_zero_idx[i]
-                    enzyme = experiment.enzyme[ei]
-                    apf_subfigs[i].suptitle(fr"{enzyme * 1e6} $\mu$M enzyme", fontweight='bold')
-
-                    # All enzyme populations plot
-                    enz_style = ['--', ':', '-']
-                    
-                    sum_E, sum_ETA = np.zeros(len(kinetic_model.time[ei])), np.zeros(len(kinetic_model.time[ei]))
-                    for key in kinetic_model.concentrations.keys():
-                        if 'ETA' in key:
-                            sum_ETA += np.array(kinetic_model.concentrations[key][ei])
-                        if 'E' in key:
-                            sum_E += np.array(kinetic_model.concentrations[key][ei])
-
-                    for b, c in enumerate(['E','E*']):
-                        axs[0].plot(kinetic_model.time[ei], [x/y for x,y in zip(kinetic_model.concentrations[c][ei],sum_E)], label=c, color='black', linestyle=enz_style[b])
-                    axs[0].plot(kinetic_model.time[ei], [x/y for x,y in zip(sum_ETA,sum_E)], label=r'$ETA_{i}$', color='black', linestyle=enz_style[2])
-                    axs[0].legend(frameon=True,loc='upper right', facecolor='white')
-                    axs[0].set_ylim([-0.05, 1.05])
-
-                    # Free enzyme populations plot
-                    enz_style = ['-', ':']
-                    sum_E = [x+y for x,y in zip(kinetic_model.concentrations['E'][ei], kinetic_model.concentrations['E*'][ei])]
-                    for b, c in enumerate(['E','E*']):
-                        axs[1].plot(kinetic_model.time[ei], [x/y for x,y in zip(kinetic_model.concentrations[c][ei],sum_E)], label=c, color='black', linestyle=enz_style[b])
-                    axs[1].legend(frameon=True, loc='upper right', facecolor='white')
-                    axs[1].set_ylim([-0.05, 1.05])
-
-                    # E*/E plot
-                    Estar_E = [x/y for x,y in zip(kinetic_model.concentrations['E*'][ei],kinetic_model.concentrations['E'][ei])]
-                    axs[2].plot(kinetic_model.time[ei], Estar_E, label=c, color='black', linestyle='-')
-                    temp_ylimits = axs[2].get_ylim()
-                    if temp_ylimits[1] - temp_ylimits[0] < 10:
-                        axs[2].set_yscale('linear')
-                    else:
-                        axs[2].set_yscale('log')
-                    temp_ylimits = axs[2].get_ylim()
-                    axs[2].set_ylim([temp_ylimits[0] - temp_ylimits[1] * 0.1, temp_ylimits[1] + temp_ylimits[1] * 0.1])
-                    if axs[2].get_ylim()[1] - axs[2].get_ylim()[0] < 1:
-                        axs[2].set_ylim([axs[2].get_ylim()[0]-0.5, axs[2].get_ylim()[1]+0.5])
-                    axs[2].annotate(fr"E*/E ~ {sci_notation(np.mean(Estar_E))} $\pm$ {sci_notation(np.std(Estar_E))}", 
-                                    (0.05,0.9), xycoords='axes fraction', fontsize=8, ha='left', color='black',
-                                bbox=dict(fc="w", ec='none', alpha=0.8, pad=0.5))
-
-                    # Labels and formatting
-                    titles = ['Fraction All Enzyme', 'Fraction Free Enzyme', 'E*/E Ratio']
-                    ylabeltext = ['Fraction All Enzyme', 'Fraction Free Enzyme', 'E*/E']
-                    for ani, ax_num in enumerate(axs):
-                        axs[ani].set_xlim(xlim)
-                        if i == 0:
-                            axs[ani].set_title(titles[ani],fontweight='bold')
-                        if i == len(experiment.enzyme) - 1:  # Put x-axis label below last plot
-                            axs[ani].set_xlabel('Time (s)', fontweight='bold')
-                        axs[ani].set_ylabel(ylabeltext[ani], fontweight='bold')
-                        if ani != 2:
-                            axis_format = 'both'
-                        else:
-                            axis_format = 'x'
-                        axs[ani].ticklabel_format(axis=axis_format, style='sci', scilimits=[-2,2], useMathText=True)
-                if len(experiment.enzyme) == 1:
-                    apf_subfigs[1].set_visible(False)
-
-                pdf.savefig(enz_pop_fig,bbox_inches='tight')
-
-            else:
-                for i, subfig in enumerate(apf_subfigs): # for each enzyme concentration
-                    i = i + 1
-                    axs = subfig.subplots(1,3,gridspec_kw={'width_ratios': [1,1,1]})
-                    enzyme = experiment.enzyme[i]
-                    subfig.suptitle(fr"{enzyme * 1e6} $\mu$M enzyme", fontweight='bold')
-
-                    # All enzyme populations plot
-                    enz_style = ['--', ':', '-']
-                    
-                    sum_E, sum_ETA = np.zeros(len(kinetic_model.time[i])), np.zeros(len(kinetic_model.time[i]))
-                    for key in kinetic_model.concentrations.keys():
-                        if 'ETA' in key:
-                            sum_ETA += np.array(kinetic_model.concentrations[key][i])
-                        if 'E' in key:
-                            sum_E += np.array(kinetic_model.concentrations[key][i])
-
-                    for b, c in enumerate(['E','E*']):
-                    
-                        axs[0].plot(kinetic_model.time[i], [x/y for x,y in zip(kinetic_model.concentrations[c][i],sum_E)], label=c, color='black', linestyle=enz_style[b])
-                    axs[0].plot(kinetic_model.time[i], [x/y for x,y in zip(sum_ETA,sum_E)], label=r'$ETA_{i}$', color='black', linestyle=enz_style[2])
-                    axs[0].legend(frameon=True,loc='upper right', facecolor='white')
-                    axs[0].set_ylim([-0.05, 1.05])
-
-                    # Free enzyme populations plot
-                    enz_style = ['-', ':']
-                    sum_E = [x+y for x,y in zip(kinetic_model.concentrations['E'][i], kinetic_model.concentrations['E*'][i])]
-                    for b, c in enumerate(['E','E*']):
-                        axs[1].plot(kinetic_model.time[i], [x/y for x,y in zip(kinetic_model.concentrations[c][i],sum_E)], label=c, color='black', linestyle=enz_style[b])
-                    axs[1].legend(frameon=True, loc='upper right', facecolor='white')
-                    axs[1].set_ylim([-0.05, 1.05])
-
-                    # E*/E plot
-                    Estar_E = [x/y for x,y in zip(kinetic_model.concentrations['E*'][i],kinetic_model.concentrations['E'][i])]
-                    axs[2].plot(kinetic_model.time[i], Estar_E, label=c, color='black', linestyle='-')
-                    temp_ylimits = axs[2].get_ylim()
-                    if temp_ylimits[1] - temp_ylimits[0] < 10:
-                        axs[2].set_yscale('linear')
-                    else:
-                        axs[2].set_yscale('log')
-                    temp_ylimits = axs[2].get_ylim()
-                    axs[2].set_ylim([temp_ylimits[0] - temp_ylimits[1] * 0.1, temp_ylimits[1] + temp_ylimits[1] * 0.1])
-                    if axs[2].get_ylim()[1] - axs[2].get_ylim()[0] < 1:
-                        axs[2].set_ylim([axs[2].get_ylim()[0]-0.5, axs[2].get_ylim()[1]+0.5])
-                    axs[2].annotate(fr"E*/E ~ {sci_notation(np.mean(Estar_E))} $\pm$ {sci_notation(np.std(Estar_E))}", 
-                                    (0.05,0.9), xycoords='axes fraction', fontsize=8, ha='left', color='black',
-                                bbox=dict(fc="w", ec='none', alpha=0.8, pad=0.5))
-
-                    # Labels and formatting
-                    titles = ['Fraction All Enzyme', 'Fraction Free Enzyme', 'E*/E Ratio']
-                    ylabeltext = ['Fraction All Enzyme', 'Fraction Free Enzyme', 'E*/E']
-                    for ani, ax_num in enumerate(axs):
-                        axs[ani].set_xlim(xlim)
-                        if i == 1:
-                            axs[ani].set_title(titles[ani],fontweight='bold')
-                        if i == len(experiment.enzyme) - 1:  # Put x-axis label below last plot
-                            axs[ani].set_xlabel('Time (s)', fontweight='bold')
-                        axs[ani].set_ylabel(ylabeltext[ani], fontweight='bold')
-                        if ani != 2:
-                            axis_format = 'both'
-                        else:
-                            axis_format = 'x'
-                        axs[ani].ticklabel_format(axis=axis_format, style='sci', scilimits=[-2,2], useMathText=True)
-
-                pdf.savefig(enz_pop_fig,bbox_inches='tight')   
-            plt.close()
-
-    @staticmethod
-    def plot_annealed_fraction(experiments, hybridization_models, enz_colors, sample_name, pdf):
-        mpl.rcParams['mathtext.default'] = 'regular'
-        for j, experiment in enumerate(experiments): # Plot individual replicates on separate plots to see fits more clearly
-            if j == 0:
-                hybridization_model = hybridization_models[j]
-                annealed_fraction_fig = plt.subplots(1,1,figsize=(7,5)) # Access fig with data_fit_fig[0], axis with data_fit_fig[1]
-
-                for i, enzyme in enumerate(experiment.enzyme):
-                    color_idx = i
-                    line_label = f"{enzyme * 1e6}"
-
-                    # Annealed Fraction plot
-                    annealed_fraction_fig[1].scatter(hybridization_model.time[i],hybridization_model.annealed_fraction[i],s=30,color=enz_colors[color_idx],label=line_label,alpha=0.8,linewidth=0)
-                
-                annealed_fraction_fig[1].set_xlabel('Time (s)', fontweight='bold')
-                annealed_fraction_fig[1].set_ylabel('Annealed fraction', fontweight='bold')
-                annealed_fraction_fig[1].set_title(f"Annealed fraction", fontweight='bold')
-                annealed_fraction_fig[1].set_ylim([-0.1, 1.1])
-                L = annealed_fraction_fig[1].legend(frameon=False,handlelength=0,handletextpad=0,loc='upper right',title=fr"[{sample_name}] $\mu$M",markerscale=0)
-                for k,text in enumerate(L.get_texts()):
-                    text.set_color(enz_colors[k])
-                    text.set_path_effects([path_effects.Stroke(linewidth=1.2, foreground=enz_colors[k]),path_effects.Normal()])
-                annealed_fraction_fig[0].tight_layout()
-                pdf.savefig(annealed_fraction_fig[0])
-            plt.close()
-
-    @staticmethod
-    def plot_2d_population_bars(experiments, kinetic_models, enzyme_colors, t_pop_colors, pdf, timesample):
-        mpl.rcParams['mathtext.default'] = 'regular'
-        for j, experiment in enumerate(experiments): # Plot individual replicates on separate plots to see fits more clearly
-            if j == 0:
-                kinetic_model = kinetic_models[j]
-
-                for i, enzyme in enumerate(experiment.enzyme):
-                    # Species concentration bar plots at desired time points
-                    fig, ax = plt.subplots(len(timesample), 3, figsize=(11, len(timesample) * 2), gridspec_kw={'width_ratios': [1, 1, 6]})
-
-                    for ti, time in enumerate(timesample):
-                        tindex = (np.abs(kinetic_model.time[i] - time)).argmin()
-                        kinetic_model.calculate_total_rna_concentrations()
-                        ax[ti][0].bar(0.0, kinetic_model.concentrations['E*'][i][tindex]/kinetic_model.enzyme[i], color=enzyme_colors[1], label='E*', width=0.5)
-                        ax[ti][0].bar(0.75, kinetic_model.concentrations['E'][i][tindex]/kinetic_model.enzyme[i], color=enzyme_colors[0], label='E', width=0.5)
-                        ax[ti][1].bar(0.0, kinetic_model.total_rna_concentrations[f'TA{kinetic_model.n}'][i][tindex]/kinetic_model.rna, color=t_pop_colors[-1], label=f"TA$_{{{kinetic_model.n}}}$", width=0.5)
-                        ax[ti][1].bar(0.75, kinetic_model.total_rna_concentrations['A1'][i][tindex]/(kinetic_model.rna * (kinetic_model.n - 1)), color=t_pop_colors[0], label="A$_{{{1}}}$", width=0.5)
-
-                        for q, k in enumerate(kinetic_model.total_rna_concentrations.keys()):
-                            if k not in ['A1', f"TA{kinetic_model.n}"]:
-                                alen = int(k.split('TA')[1])
-                                ax[ti][2].bar(q, kinetic_model.total_rna_concentrations[k][i][tindex]/kinetic_model.rna, color=t_pop_colors[q], label=f'TA$_{{{alen}}}$')
-                        
-                        ax[ti][2].invert_xaxis()
-                        ax[ti][0].set_ylabel(f"Fraction at t: {np.round(kinetic_model.time[i][tindex],0)} s", fontweight='bold')
-                        xlabeltext = ['Enzyme states', 'Initial RNA and AMP', 'Product RNA']
-                        xticktext = [['E*', 'E'], [f"TA$_{{{kinetic_model.n}}}$", 'A$_{{{1}}}$'], ['TA' + f"$_{{{v}}}$" for v in rna_lens]]
-                        for ani, ax_num in enumerate([0, 1, 2]):
-                            if ti == len(timesample) - 1:
-                                ax[ti][ax_num].set_xlabel(xlabeltext[ani], fontweight='bold')
-                            if ti < len(timesample) - 1:
-                                ax[ti][ax_num].set_xticklabels([])
-                            else:
-                                ax[ti][ax_num].set_xticklabels(xticktext[ani], rotation=45)
-                            if ax_num == 2:
-                                xtickvalues = [x for x in range(0, kinetic_model.n - 1)]
-                                xlimit = [kinetic_model.n-0.75, -0.75]
-                            else:
-                                xtickvalues = [0, 0.75]
-                                xlimit = [-0.5, 1.25]
-                            ax[ti][ax_num].set_xticks(xtickvalues)
-                            ax[ti][ax_num].set_xlim(xlimit)
-                            ax[ti][ax_num].set_ylim([-0.02, 1.02])
-                        
-                        rna_lens = [int(k.split('TA')[1]) for k in kinetic_model.total_rna_concentrations.keys() if k not in [f'TA{kinetic_model.n}', 'A1']]
-
-                        if ti == 0:
-                            ax[ti][2].set_title(fr"$E_{0}$: {np.round(kinetic_model.enzyme[i] * 1e6,1)}, $RNA_{0}$: {np.round(kinetic_model.rna * 1e6,1)} $\mu$M")
-                    
-                    fig.tight_layout()
-                    pdf.savefig(fig)
-        plt.close()
-
-    @staticmethod
-    def plot_3d_population_bars(experiments, kinetic_models, hybridization_models, pdf, timesample, sample_name):
-        mpl.rcParams['mathtext.default'] = 'regular'
-        for j, experiment in enumerate(experiments): # Plot individual replicates on separate plots to see fits more clearly
-            kinetic_model = kinetic_models[j]
-            kinetic_model.calculate_total_rna_concentrations()
-            hybridization_model = hybridization_models[j]
-
-            # 3D surface/bar plots, e.g. x = species, y = enzyme conc., z = species fraction
-            surf_figs = []
-            for ti, time in enumerate(timesample):
-                species_matrix = []
-                resampled_species_matrix = []
-                enzyme_matrix = []
-                resampled_enzyme_matrix = []
-                fraction_matrix = []
-                rna_species = [f'TA{x}' for x in range(1, experiment.n + 1)]
-                fine_enz = np.linspace(kinetic_model.enzyme[1] * 1e6, kinetic_model.enzyme[-1] * 1e6, 10)
-                resampled_species_vector = np.linspace(1, kinetic_model.n, kinetic_model.n)
-                for ei, enz in enumerate(kinetic_model.enzyme):
-                    if ei == 0:
-                        pass
-                    else:
-                        tindex = (np.abs(kinetic_model.time[ei] - time)).argmin()
-                        species_vector = [int(x.split('TA')[1]) for x in rna_species]
-                        enzyme_vector = [enz * 1e6 for x in species_vector]
-                        fraction_vector = [kinetic_model.total_rna_concentrations[x][ei][tindex]/kinetic_model.rna for x in rna_species]
-
-                        species_matrix.append(species_vector)
-                        enzyme_matrix.append(enzyme_vector)
-                        fraction_matrix.append(fraction_vector)
-                
-                for ei, enz in enumerate(fine_enz):
-                    resampled_enzyme_vector = [enz for x in resampled_species_vector]
-                    resampled_species_matrix.append(resampled_species_vector)
-                    resampled_enzyme_matrix.append(resampled_enzyme_vector)
-
-                surf_fig = plt.figure(figsize=(11, 7))
-                surf_ax = surf_fig.gca(projection='3d')
-                X = np.array(resampled_species_matrix)
-                Y = np.array(resampled_enzyme_matrix)
-                Z = interpolate.griddata((np.ravel(species_matrix), np.ravel(enzyme_matrix)), np.ravel(fraction_matrix), (X, Y), method='linear')
-
-                X = np.ravel(X)
-                Y = np.ravel(Y)
-                Z = np.ravel(Z)
-
-                x = np.full_like(X, 0.8)
-                y = np.full_like(Y, 0.4)
-                z = np.full_like(Z, 0)
-
-                fracs = np.ravel(X.astype(float))/np.ravel(X.max())
-                norm = colors.Normalize(fracs.min(), fracs.max())
-                color_values = cm.coolwarm(norm(fracs.tolist()))
-
-                surf_ax.bar3d(Y, X, z, y, x, Z, color=color_values, edgecolor='w', linewidth=0.1, shade=False)
-                surf_ax.set_ylabel('RNA polyA length', labelpad=10, fontweight='bold')
-                surf_ax.set_xlabel(fr'[{sample_name}] $\mu$M', labelpad=10, fontweight='bold')
-                surf_ax.set_zlabel('Fraction', labelpad=10, fontweight='bold')
-                surf_ax.set_yticks(np.linspace(2, kinetic_model.n, 9))
-                surf_ax.set_xticks(np.linspace(Y.min(), Y.max(), 10))
-                surf_ax.set_ylim([X.max()+0.05 * X.max(), X.min()-0.05 * X.max()])
-                surf_ax.set_xlim([Y.min()-0.05 * Y.max(), Y.max()+0.05 * Y.max()])
-                surf_ax.set_zlim([-0.01, 1.01])
-                surf_ax.set_title(f"Time: {time} s")
-
-                surf_ax.xaxis.pane.fill = False
-                surf_ax.yaxis.pane.fill = False
-                surf_ax.zaxis.pane.fill = False
-                surf_ax.xaxis.pane.set_edgecolor('w')
-                surf_ax.yaxis.pane.set_edgecolor('w')
-                surf_ax.zaxis.pane.set_edgecolor('w')
-
-                surf_ax.set_box_aspect(aspect=(1.8,1.8,1))
-                surf_ax.view_init(azim=-60, elev=30)
-                surf_fig.tight_layout()
-                surf_figs.append(surf_fig)
-                plt.close(surf_fig)
-
-            for fig in surf_figs:
-                pdf.savefig(fig)
-        plt.close()
 
     def run_plots(self):
 
@@ -1039,17 +679,6 @@ class PlotHandler:
             if self.RNA_populations_3D_flag == True:
                 self.plot_rna_populations_3D(self.experiments, self.kinetic_models, self.sample_name, self.pdf, self.enzyme_colors, self.xlimits)
 
-            if self.enzyme_populations_flag == True:
-                self.plot_enzyme_populations(self.experiments, self.kinetic_models, self.sample_name, self.pdf, self.xlimits)
-            
-            if self.annealed_fraction_flag == True:
-                self.plot_annealed_fraction(self.experiments, self.hybridization_models, self.enzyme_colors, self.sample_name, self.pdf)
-                    
-            if self.bar_2d_flag == True:
-                self.plot_2d_population_bars(self.experiments, self.kinetic_models, self.enzyme_bar_colors, self.t_pop_colors, self.pdf, self.timesample)
-                    
-            if self.bar_3d_flag == True:
-                self.plot_3d_population_bars(self.experiments, self.kinetic_models, self.hybridization_models, self.pdf, self.timesample, self.sample_name)                
             self.pdf.close()
 
     def get_colors(self, points=100, colormap=cm.coolwarm, map_name='plot_colors', trim = True):

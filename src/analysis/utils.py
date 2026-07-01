@@ -93,7 +93,7 @@ def write_optimal_parameter_csv(param_values, param_units, config_params, varied
     if "2phase" in model:
         for phase in ["Dilute","Dense"]:
             params_dict['Parameter'].append(f'kobs_{phase}')
-            if any(config_params['Modeling parameters']['Kinetic model']== x for x in ['Steady state distributive', '2phase SS distributive']):
+            if any(config_params['Modeling parameters']['Kinetic model']== x for x in ['Steady state distributive', '2phase steady state distributive', '2phase SS distributive']):
                 params_dict['Value'].append(float(param_values[f'kcat_{phase}']/param_values[f'KM_{phase}']))
             else:
                 params_dict['Value'].append(calc_kobs(param_values[f'k1_{phase}'],param_values[f'km1_{phase}'],param_values[f'k2_{phase}'],param_values[f'km2_{phase}'],param_values[f'kcat_{phase}']))
@@ -101,7 +101,7 @@ def write_optimal_parameter_csv(param_values, param_units, config_params, varied
             params_dict['Varied'].append('n/a')
     else:
         params_dict['Parameter'].append('kobs')
-        if any(model == x for x in ['Steady state distributive', '2phase SS distributive']):
+        if any(model == x for x in ['Steady state distributive', '2phase steady state distributive', '2phase SS distributive']):
             params_dict['Value'].append(float(param_values['kcat']/param_values['KM']))
         else:
             params_dict['Value'].append(calc_kobs(param_values['k1'],param_values['km1'],param_values['k2'],param_values['km2'],param_values['kcat']))
@@ -114,7 +114,7 @@ def write_parameter_RSS_csv(initial_guess_params, output_dir, sum_of_squared_res
         
         param_names = [str(param) for param in initial_guess_params.keys()]
         param_values = [initial_guess_params[param].value for param in initial_guess_params.keys()]
-        if any(config_params["Modeling parameters"]["Kinetic model"] == x for x in ['Steady state distributive', '2phase SS distributive']):
+        if any(config_params["Modeling parameters"]["Kinetic model"] == x for x in ['Steady state distributive', '2phase steady state distributive', '2phase SS distributive']):
             param_values.append(float(param_values[0]/param_values[1]))
         else:
             param_values.append(calc_kobs(param_values[0],param_values[1],param_values[2],param_values[3],param_values[4]))

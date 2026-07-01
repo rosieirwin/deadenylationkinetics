@@ -9,22 +9,24 @@ import os
 """
 Calculate the free energy (ΔG) of RNA/DNA hybrid duplexes with varying lengths of polyA tails.
 
-Run from data/RNA_DNA_duplex_hybridization directory
-
 Ref. Banerjee, D. et al. Improved nearest-neighbor parameters for the stability of RNA/DNA hybrids under
 a physiological condition. Nucleic Acids Res. 48(21):12042-54. 2020.
 """
 
-def main():
-    # User inputs
-    L = 1e-7 # ligand concentration in M
-    n = 18 # number of As in polyA tail
-    RNA_tag_sequence = 'CCUUUCC'
-    temp_C = 28 # C
-    salt = 'low' # 'low' (~100 mM) or 'high' (~1 M) salt conditions
+#### User inputs ####
 
-    output_dir = f'duplex_tag-{RNA_tag_sequence}_n-{n}_conc-{L}M_{temp_C}C_{salt}_salt'
-    
+L = 1e-7 # ligand concentration in M
+n = 18 # number of As in polyA tail
+RNA_tag_sequence = 'CCUUUCC' # if there are any bases preceeding the polyA tail, include them here
+temp_C = 25 # C
+salt = 'low' # 'low' (~100 mM) or 'high' (~1 M) salt conditions
+output_dir = f'duplex_tag-{RNA_tag_sequence}_n-{n}_conc-{L}M_{temp_C}C_{salt}_salt'
+
+######################
+
+
+def main(L, n, RNA_tag_sequence, temp_C, salt, output_dir):
+
     # Create output directory if it doesn't exist
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -200,4 +202,4 @@ def plot_Kd_frac(plot_df, salt, temp_C, output_dir):
     plt.savefig(filename)
 
 
-main()
+main(L, n, RNA_tag_sequence, temp_C, salt, output_dir)

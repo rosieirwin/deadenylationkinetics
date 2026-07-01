@@ -32,9 +32,8 @@ class FretExperiment():
         if config_params['Modeling parameters']['SS time range']['Limit'] == True:
             ss_times = pd.read_csv(config_params['Modeling parameters']['SS time range']['File'])
         
-        if any(config_params['Modeling parameters']['Kinetic model'] == x for x in ['Distributive-dense','2phase SS distributive']):
-            self.partitioning_data = pd.read_csv(config_params['Partitioning']['Data file'])
-            self.use_dvf = config_params["Partitioning"]["Use DVF"]
+        if any(config_params['Modeling parameters']['Kinetic model'] == x for x in ['Distributive-dense','2phase steady state distributive', '2phase SS distributive']):
+            self.partitioning_data = pd.read_csv(config_params['Partitioning data file'])
 
         for idx, (ind, group) in enumerate(self.data_groups): # Convert data frame into list-of-lists of time, fret, RNA, and DNA
             if config_params['Modeling parameters']['SS time range']['Limit'] == False:

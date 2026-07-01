@@ -108,6 +108,7 @@ def main():
         error_analyzer.monte_carlo_parameter_dictionary()
         error_analyzer.monte_carlo_fits(experiment, kinetic_model, hybridization_model, simulate_full_model, objective_wrapper)
         error_analyzer.monte_carlo_distributions()
+        error_analyzer.plot_monte_carlo_distributions(config_params)
         error_analyzer.save_monte_carlo_results(config_params)
 
     # Run parameter correlation analysis - will check correlations between any varied parameters
@@ -117,6 +118,7 @@ def main():
         error_analyzer = ErrorAnalysis(error_params, varied_params, cores, None, rmsd, range_factor, points, False, opt_param_units)
         error_analyzer.correlation_pairs()
         error_analyzer.parameter_correlation_fits(experiment, kinetic_model, hybridization_model, simulate_full_model, objective_wrapper)
+        error_analyzer.parameter_correlation_surfaces(config_params)
         error_analyzer.save_parameter_correlation_results(config_params)
         error_analyzer.parameter_correlation_surfaces(config_params)
 

@@ -5,7 +5,7 @@
 Authors: Robert W. Harkness, Rose M. Irwin
 """
 
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed, Future
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from copy import deepcopy
 from lmfit import minimize, Parameters, report_fit
 import matplotlib
@@ -115,7 +115,7 @@ class ErrorAnalysis():
         sample_name = config_params['Sample name']
         output_dir = config_params['Output location']
 
-        pdf = make_pdf(f"./{output_dir}/{sample_name}_parameter_correlation_surfaces.pdf")
+        pdf = make_pdf(f"./{output_dir}/{sample_name}_parameter-correlation-surfaces_range-{self.range_factor}_points-{self.points}.pdf")
 
         for param_pairs in self.correlation_pairs.keys():
             param_pair_values = self.correlation_pairs[param_pairs]
@@ -125,26 +125,26 @@ class ErrorAnalysis():
             x = sorted_param_pair_values[param_pairs.split(',')[0]]
             y = sorted_param_pair_values[param_pairs.split(',')[1]]
             z = sorted_param_pair_values['RSS']
+            try:
+                xgrid, ygrid, zgrid = self.make_grid_data(x, y, z, resolution=self.points)
 
-
-            xgrid = np.reshape(x, (self.points, self.points))
-            ygrid = np.reshape(y, (self.points, self.points))
-            zgrid = np.reshape(z, (self.points, self.points)) # Reduced delta RSS
-
-            fig, ax = plt.subplots(1, 1)
-            a = ax.contourf(xgrid, ygrid, zgrid, levels=100, cmap='turbo')
-            ax.plot(self.opt_params[param_pairs.split(',')[0]].value, self.opt_params[param_pairs.split(',')[1]].value, 'X', markersize=10, mew=1, mec='k', mfc='w')
-            cbar = fig.colorbar(a, format='%.2e')
-            cbar.ax.set_title('RSS', pad=10)
-            x_label = param_pairs.split(',')[0]
-            y_label = param_pairs.split(',')[1]
-            ax.set_xlabel(x_label)
-            ax.set_ylabel(y_label)
-            ax.set_xscale('log')
-            ax.set_yscale('log')
-            fig.tight_layout()
-            pdf.savefig(fig, bbox_inches='tight')
-            plt.close()
+                fig, ax = plt.subplots(1, 1)
+                a = ax.contourf(xgrid, ygrid, zgrid, levels=100, cmap='turbo')
+                ax.plot(self.opt_params[param_pairs.split(',')[0]].value, self.opt_params[param_pairs.split(',')[1]].value, 'X', markersize=10, mew=1, mec='k', mfc='w', label="Optimal Parameters")
+                cbar = fig.colorbar(a, format='%.2e')
+                cbar.ax.set_title('RSS', pad=10)
+                x_label = param_pairs.split(',')[0]
+                y_label = param_pairs.split(',')[1]
+                ax.set_xlabel(x_label)
+                ax.set_ylabel(y_label)
+                ax.set_xscale('log')
+                ax.set_yscale('log')
+                ax.legend()
+                ax.set_title(f"Parameter correlation surface for {param_pairs}")
+                pdf.savefig(fig)
+                plt.close()
+            except Exception as exc:
+                print(f'Error occurred while making grid data for {param_pairs}: {exc}')
         pdf.close()
 
     @staticmethod
@@ -178,7 +178,7 @@ class ErrorAnalysis():
         for key in result_dict.keys():
             merged_result_dict[key] = np.ravel(result_dict[key])
         merged_result_df = pd.DataFrame(merged_result_dict)
-        merged_result_df.to_csv(f"{output_dir}/{sample_name}_parameter_correlation_results.csv")
+        merged_result_df.to_csv(f"{output_dir}/{sample_name}_parameter-correlation-results_range-{self.range_factor}_points-{self.points}.csv")
 
 
     ###### Monte Carlo #######
