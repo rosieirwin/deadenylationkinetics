@@ -1,0 +1,7 @@
+,Parameter,Value,Units,Varied
+0,kcat,4.699133e-01,s^-1,True
+1,KM,2.754208e-04,M,True
+2,dGo,-3.249800e+00,kJmol^-1,False
+3,alpha,-4.068400e+00,kJmol^-1,False
+4,RMSD,0.05366370940866281,n/a,n/a
+5,kobs,1706.164579931014,M^-1s^-1,n/a

@@ -1,10 +1,8 @@
 ,Parameter,Value,Units,Varied
-0,KM_Dilute,1.550000e-04,M,False
-1,kcat_Dilute,2.940000e-01,s^-1,False
-2,KM_Dense,9.232068e-04,M,True
-3,kcat_Dense,3.357283e-01,s^-1,True
-4,alpha,-2.7351,kJmol^-1,n/a
-5,dGo,-3.2498,kJmol^-1,n/a
-6,RMSD,0.029329267709095046,n/a,n/a
-7,kobs_Dilute,1896.774193548387,M^-1s^-1,n/a
-8,kobs_Dense,363.65447665837723,M^-1s^-1,n/a
+0,kcat_Dilute,1.000000e+00,s^-1,False
+1,KM_Dilute,5.562550e-04,M,False
+2,kcat_Dense,3.357916e-01,s^-1,True
+3,KM_Dense,9.208921e-04,M,True
+4,RMSD,0.04089875787187497,n/a,n/a
+5,kobs_Dilute,1797.7366495582064,M^-1s^-1,n/a
+6,kobs_Dense,364.63724614666194,M^-1s^-1,n/a

@@ -3,9 +3,7 @@
 
 Sample name: CNOT7_two-phases
 Data file to fit: ../data/two-phase_FRET_data_to_fit.csv
-Partitioning:
-  Use DVF: False  # If true, determine concentraitons from DVF and PC; if false, use provided concentrations
-  Data file: ../../../partitioning_data/fit_parameters_enz_array-All_0.csv
+Partitioning data file: ../data/partitioning_data.csv
 Output location: output/
 Output plot file: fit_plots.pdf
 Optimal fit parameter file: fit_params.csv
@@ -15,15 +13,15 @@ Experimental parameters:
   Temperature: 
     Value: 298.15
 Modeling parameters:
-  Fit: True
-  Export simulated data: False
-  Minimizer: 'nelder'
-  Kinetic model: 2phase SS distributive # this is the only two phase kinetic model currently implemented
+  Fit: True # if set to False, will not perform fitting, but will still simulate the data using the provided parameters
+  Export simulated data: False # if set to True, will export the simulated curves as a dataset to a CSV file in the output location
+  Minimizer: nelder # recommended: 'leastsq' for least squares fitting for refinement, 'nelder' for Nelder-Mead simplex algorithm when stuck in local minima
+  Kinetic model: 2phase steady state distributive # this is the only two phase kinetic model currently implemented
   Max function evaluations: 10000
-  SS time range:
-    Export: False
-    Limit: False
-    File: ../all-float/output/CNOT7_CAPRIN1_all-float_ss_times.csv
+  SS time range: # The time range for the steady state conditions (when the substrate-enzyme complex concentration is constant)
+    Export: False # If True, will export the steady state time range to a CSV file in the output location
+    Limit: False # If True, will limit the time range for fitting to the steady state time range; if False, will use the entire time range of the data for fitting
+    File: output/two-phase_all-float_ss_times.csv
   Fit parameters:
     Dilute parameters:
       kcat:
@@ -51,6 +49,9 @@ Modeling parameters:
         Vary: True
         Minimum: 0.000000001
         Maximum: inf
+
+    # dGo and alpha are empirical values calculated from Sugimoto NAR paper; they are not fit parameters, but are used to calculate RNA-DNA annealing free energy for the RNA-DNA hybridization step in the model
+    # To calculate these values, use the calculate_hybrid_duplex_free_energy.py script in the scripts directory
     dGo:
       Value: -3.2498 # kJ/mol Empirical value calculated from Sugimoto NAR paper
       Units: kJmol^-1
@@ -65,14 +66,14 @@ Modeling parameters:
       Maximum: 0
   Error estimation:
     Cores: 0  # Number of cores to use for parallel processing; if set to 0, n-1 cores are used where n is the number of cores in the machine
-    Monte Carlo:
+    Monte Carlo: # Error estimation using Monte Carlo simulations; will simulate data using the best fit parameters, add noise according to the RMSD, and refit to estimate error in the fit parameters
       Run: True
       Iterations: 100
       Export simulated data: False
-    Error surfaces:
-      Run: False
-      Parameter range factor: 20
-      Points: 20
+    Error surfaces: # Estimate parameter correlations by calculating the error a certain number of times (Points) across a range of values (Parameter range factor) for each pair of fit parameters; will be plotted as surface plots
+      Run: True
+      Parameter range factor: 10
+      Points: 10
 Plot parameters:
   Best fit: 
     Plot best fit: True  # Plot data and best fit line
@@ -83,5 +84,4 @@ Plot parameters:
   Plot mean data: True  # Plot mean data for a given time point (True) vs plot each data point (False) 
   Plot residuals: True  # Plot residuals of the fits vs time (each enzyme concentration residuals shown separately)
   Plot RNA population curves: True  # Plot RNA populations ([A_n], [A_{n-1}],[A_n-2],...) vs time (each enzyme concentration shown separately)
-  Plot 3D RNA population curves: False  # Plot RNA populations ([A_n], [A_{n-1}],[A_n-2],...) vs time vs enzyme concentration
-  Plot enzyme population curves: False  # Plot enzyme populations ([E], [E*], [E**],...) vs time (each RNA length shown separately)
+  Plot 3D RNA population curves: False  # ONLY IMPLEMENTED FOR SINGLE PHASE; Plot RNA populations ([A_n], [A_{n-1}],[A_n-2],...) vs time vs enzyme concentration

@@ -2,7 +2,7 @@
 ## It should be placed in the same directory as the data files to be fit
 
 Sample name: CNOT7
-Data file to fit: data/FRET_data_to_fit.csv
+Data file to fit: ../data/FRET_data_to_fit.csv
 Output location: output/
 Output plot file: fit_plots.pdf
 Optimal fit parameter file: fit_params.csv
@@ -12,69 +12,78 @@ Experimental parameters:
   Temperature: 
     Value: 298.15
 Modeling parameters:
-  Fit: True
-  Export simulated data: False ## Set to false unless you're running simulate_data_from_all_float.py
-  Minimizer: 'nelder' 
-  Kinetic model: Distributive
-  Max function evaluations: 200
-  SS time range:
-    Export: False
-    Limit: False
-    File: ../all-float/output/CNOT7_ss_times.csv
+  Fit: True # if set to False, will not perform fitting, but will still simulate the data using the provided parameters
+  Export simulated data: False # if set to True, will export the simulated curves as a dataset to a CSV file in the output location
+  Minimizer: nelder # recommended: 'leastsq' for least squares fitting for refinement, 'nelder' for Nelder-Mead simplex algorithm when stuck in local minima
+  Kinetic model: Distributive # can be Distributive or Processive
+  Max function evaluations: 10000
+  SS time range: # The time range for the steady state conditions (when the substrate-enzyme complex concentration is constant)
+    Export: False # If True, will export the steady state time range to a CSV file in the output location
+    Limit: False # If True, will limit the time range for fitting to the steady state time range; if False, will use the entire time range of the data for fitting
+    File: output/CNOT7_ss_times.csv
   Fit parameters:
     k1:
       Value: 1.942812e+00
       Units: s^-1
       Vary: True
       Minimum: 0
+      Maximum: inf
     km1:
       Value: 1.942812e+00
       Units: s^-1
       Vary: True
       Minimum: 0
+      Maximum: inf
     k2:
       Value: 1.060298e+07
       Units: M^-1s^-1
       Vary: True
       Minimum: 0
+      Maximum: inf
     km2:
       Value: 5.065293e+03
       Units: s^-1
       Vary: True
       Minimum: 0
+      Maximum: inf
     kcat:
       Value: 8.729961e-01
       Units: s^-1
       Vary: True
       Minimum: 0
+      Maximum: inf
+
+    # dGo and alpha are empirical values calculated from Sugimoto NAR paper; they are not fit parameters, but are used to calculate RNA-DNA annealing free energy for the RNA-DNA hybridization step in the model
+    # To calculate these values, use the calculate_hybrid_duplex_free_energy.py script in the scripts directory
     dGo:
       Value: -3.2498 # kJ/mol Empirical value calculated from Sugimoto NAR paper
       Units: kJmol^-1
       Vary: False
       Minimum: -20
+      Maximum: 0
     alpha:
       Value: -4.0684 # kJ/mol Empirical value calculated from Sugimoto NAR paper
       Units: kJmol^-1
       Vary: False
       Minimum: -20
+      Maximum: 0
   Error estimation:
     Cores: 0  # Number of cores to use for parallel processing; if set to 0, n-1 cores are used where n is the number of cores in the machine
-    Monte Carlo:
-      Run: False
-      Iterations: 300
+    Monte Carlo: # Error estimation using Monte Carlo simulations; will simulate data using the best fit parameters, add noise according to the RMSD, and refit to estimate error in the fit parameters
+      Run: True
+      Iterations: 100
       Export simulated data: False
-    Error surfaces:
-      Run: False
-      Parameter range factor: 20
-      Points: 20
+    Error surfaces: # Estimate parameter correlations by calculating the error a certain number of times (Points) across a range of values (Parameter range factor) for each pair of fit parameters; will be plotted as surface plots
+      Run: True
+      Parameter range factor: 10
+      Points: 10
 Plot parameters:
   Best fit: 
-    Plot best fit: True  # Plot data and best fit line
-    Colormap: [[255, 229, 249, 1],[138, 0, 104, 1]]  # Colormap for the plot or [[R, G, B, alpha],[R, G, B, alpha]] values for lightest to darkest color
-  xlimits: [0, 4000]  # x-axis limits for the plot (s), set to None if you want the limits to be automatically determined
+    Plot best fit: True  # if False, will not plot the best fit line
+    Colormap: [[255, 229, 249, 1],[138, 0, 104, 1]]  # Colormap for the plot (e.g. inferno) or [[R, G, B, alpha],[R, G, B, alpha]] values for lightest to darkest color
+  xlimits: [0, 4000]  # x-axis limits for the plot (in seconds), set to None if you want the limits to be automatically determined
   Marker shape: 's'  # Marker shape for the data points in the plot
   Plot mean data: True  # Plot mean data for a given time point (True) vs plot each data point (False) 
   Plot residuals: True  # Plot residuals of the fits vs time (each enzyme concentration residuals shown separately)
-  Plot RNA population curves: False  # Plot RNA populations ([A_n], [A_{n-1}],[A_n-2],...) vs time (each enzyme concentration shown separately)
-  Plot 3D RNA population curves: False  # Plot RNA populations ([A_n], [A_{n-1}],[A_n-2],...) vs time vs enzyme concentration
-  Plot enzyme population curves: False  # Plot enzyme populations ([E], [E*], [E**],...) vs time (each RNA length shown separately)
+  Plot RNA population curves: True  # Plot RNA populations ([A_n], [A_{n-1}],[A_n-2],...) vs time (each enzyme concentration shown separately)
+  Plot 3D RNA population curves: True  # ONLY IMPLEMENTED FOR SINGLE PHASE; Plot RNA populations ([A_n], [A_{n-1}],[A_n-2],...) vs time vs enzyme concentration
