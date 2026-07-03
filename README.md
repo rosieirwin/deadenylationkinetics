@@ -2,7 +2,7 @@
 
 IMPORTANT: The original deadenylation kinetics package can be found at https://github.com/the-harkness-group/deadenylationkinetics. The original package will have much better documentation and support. This package was modified for a follow-up paper. Please cite this paper when using this version of the package:
 
-Irwin, R. M., Harkness, R. W. et al. Competing effects modulate the rate of poly(A) RNA deadenylation in a biomolecular condensate. bioRxiv (2026) doi:10.64898/2026.07.02.736149.
+[Irwin, R. M., Harkness, R. W. et al. Competing effects modulate the rate of poly(A) RNA deadenylation in a biomolecular condensate. bioRxiv (2026) doi:10.64898/2026.07.02.736149.](https://www.biorxiv.org/content/10.64898/2026.07.02.736149v1.supplementary-material)
 
 
 
