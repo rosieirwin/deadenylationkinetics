@@ -30,7 +30,7 @@ class ErrorAnalysis():
                     if opt_param_units[k] == None:
                         opt_param_units[k] = ['']*len(opt_params)
                     else:
-                        opt_param_units[k][ui] = k.replace('-1','{-1}')
+                        opt_param_units[k][ui] = u.replace('-1','{-1}')    
             else:
                 if opt_param_units == None:
                     opt_param_units = ['']*len(opt_params)
@@ -176,7 +176,9 @@ class ErrorAnalysis():
         
         merged_result_dict = {}
         for key in result_dict.keys():
-            merged_result_dict[key] = np.ravel(result_dict[key])
+            temp_list = []
+            temp_list.append([item for sublist in result_dict[key] for item in sublist])
+            merged_result_dict[key] = temp_list[0]
         merged_result_df = pd.DataFrame(merged_result_dict)
         merged_result_df.to_csv(f"{output_dir}/{sample_name}_parameter-correlation-results_range-{self.range_factor}_points-{self.points}.csv")
 
@@ -379,7 +381,10 @@ class ErrorAnalysis():
                     axes[i, j].set_xlabel(f"$log_{{{10}}}$({self.hist[param1]['pretty name']})")
                     axes[i, j].set_ylabel('Count')
                     axes[i, j].legend()
-                    axes[i, j].set_title(fr"{self.hist[param1]['pretty name']} = {(self.opt_params[param1].value):.1e} $\pm$ {(self.monte_carlo_errors[f'{param1} error']):.1e} (1 s.d.) ${self.param_units[i]}$")
+                    if any(k in param1 for k in ['Dilute', 'Dense']):
+                        axes[i, j].set_title(fr"{self.hist[param1]['pretty name']} = {(self.opt_params[param1].value):.1e} $\pm$ {(self.monte_carlo_errors[f'{param1} error']):.1e} (1 s.d.) ${self.param_units[param1.split('_')[1]][i]}$")
+                    else:
+                        axes[i, j].set_title(fr"{self.hist[param1]['pretty name']} = {(self.opt_params[param1].value):.1e} $\pm$ {(self.monte_carlo_errors[f'{param1} error']):.1e} (1 s.d.) ${self.param_units[i]}$")
                 else:
                     axes[i, j].scatter(np.log10(self.monte_carlo_parameters[param2]), np.log10(self.monte_carlo_parameters[param1]), c=self.monte_carlo_rss,cmap="coolwarm", alpha=1,s=10)
                     axes[i, j].set_xlabel(f"$log_{{{10}}}$({self.hist[param2]['pretty name']})")
