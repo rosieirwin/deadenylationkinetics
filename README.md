@@ -1,6 +1,10 @@
 # deadenylationkinetics
 
-IMPORTANT: The original deadenylation kinetics package can be found at https://github.com/the-harkness-group/deadenylationkinetics. This package was modified for a follow-up paper that will be submitted soon. The original package will have much better documentation and support.
+IMPORTANT: The original deadenylation kinetics package can be found at https://github.com/the-harkness-group/deadenylationkinetics. The original package will have much better documentation and support. This package was modified for a follow-up paper. Please cite this paper when using this version of the package:
+
+Irwin, R. M., Harkness, R. W. et al. Competing effects modulate the rate of poly(A) RNA deadenylation in a biomolecular condensate. bioRxiv (2026) doi:10.64898/2026.07.02.736149.
+
+
 
 ## A brief introduction to RNA biochemistry
 
@@ -64,3 +68,4 @@ For the original deadenylationkinetics package, see https://github.com/the-harkn
 ## References
 
 1. [Irwin, R., Harkness, R.W., Forman-Kay, J.D. (2024). A FRET-Based Assay and Computational Tools to Quantify Enzymatic Rates and Explore the Mechanisms of RNA Deadenylases in Heterogeneous Environments. In: Valkov, E., Goldstrohm, A.C. (eds) Deadenylation. Methods in Molecular Biology, vol 2723. Humana, New York, NY.](https://doi.org/10.1007/978-1-0716-3481-3_5)
+2. [Irwin, R. M., Harkness, R. W. et al. Competing effects modulate the rate of poly(A) RNA deadenylation in a biomolecular condensate. bioRxiv (2026) doi:10.64898/2026.07.02.736149.](https://www.biorxiv.org/content/10.64898/2026.07.02.736149v1.supplementary-material)
